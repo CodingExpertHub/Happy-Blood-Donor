@@ -15,15 +15,24 @@ const LandingPage = () => {
     <div>
         <Header />
       <div className=" flex">
-        <div className="w-7/12 justify-center items-center p-auto m-auto">
+        <div className="w-6/12 justify-center items-center p-auto m-auto">
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-purple-500 mb-6">
-            Happy Donors Smile For Saves Lives, Just Ask
+            HAPPY DONORS
           </h1>
+          <br/>
+          <h4>
+          Are you in need of blood to save a life?<br/>
+          Just ASK HAPPY DONORS, it will be given.
+
+          </h4>
+          <br/>
           <p className="text-gray-600">
-            A simple smile accompanies the profound impact of saving lives
-            through blood donation—ask any happy donor, and they'll tell you
-            it's a rewarding journey of compassion and community
+          Do you wish to donate blood and not sure who is in need?<br/>
+          Just Register and we connect to the needy in near to you<br/>
+          (we will ensure your data privacy and reach when only in need).
+
           </p>
+          <br/>
           <div className="flex gap-[50px]">
           <Link to="registerdonor" className='cursor-pointer'>
           <Button
@@ -100,15 +109,15 @@ const LandingPage = () => {
         <div className=" p-auto m-auto  w-8/12">
           <div className="mx-[38%] mb-8">
             <p className="font-bold text-2xl">
-              Why Donate <span className="text-red-500">Blood ?</span>
+               <span className="text-red-500">Services </span>
             </p>
           </div>
           <div className="flex gap-[20px]">
             <p className="text-gray-600 w-9/12 m-auto p-auto text-justify">
-              Donating blood saves lives by providing a critical resource for
-              medical treatments, surgeries, and emergencies. A single donation
-              can impact multiple patients, making it a simple yet powerful way
-              to contribute to the well-being of others
+            "Join our blood donation services, where a single act of donating blood not only saves lives but
+            also becomes a critical resource for medical treatments, surgeries, and emergencies. With our
+            platform, finding blood drives and donors is made easy, ensuring a powerful impact on the well-
+            being of multiple patients in need."
             </p>
           </div>
         </div>
@@ -215,9 +224,10 @@ const LandingPage = () => {
                 Who we <span className="text-red-500">Are</span> ?
               </p>
               <p className="text-justify text-gray-500">
-                Collaborate with healthcare professionals, government agencies,
-                non-profit organizations, and local communities to strengthen
-                the overall healthcare system.
+              We are a purpose driven passionate organisation to serve the lives in need of blood, Organs and body for Research. 
+              We collaborate with healthcare professionals, Government, NGO’s and local communities to strengthen the overall 
+              healthcare system. 
+
               </p>
             </div>
             <div>
@@ -225,16 +235,13 @@ const LandingPage = () => {
               <p className="text-justify  text-gray-500">
                 To save lives by ensuring a safe and ample blood supply for
                 patients in need, fostering community engagement, and promoting
-                the importance of regular blood donation.
+                the importance of regular blood donation. Educating people on Organ Donation and Body Donation.
               </p>
             </div>
             <div>
               <p className="text-xl font-bold">Our Vision</p>
               <p className="text-justify text-gray-500">
-                To be a leading force in promoting a culture of voluntary blood
-                donation, ensuring a robust and safe blood supply system, and
-                ultimately contributing to a healthier and more resilient
-                community.
+                The vision of making blood request and related services easy aligns with the global framework for action to achieve 100% voluntary blood donation
               </p>
             </div>
           </div>
@@ -248,11 +255,11 @@ const LandingPage = () => {
                 How much shortage of blood & How we usage of blood
               </p>
               <p className="text-justify text-gray-500 mb-6">
-                To solve this shortage, we are raising awareness and urging
-                individuals to donate blood: “All types are needed now,
-                especially types O positive and O negative, as well as platelet
-                donations, to help reverse this national blood crisis,” wrote
-                the American Red Cross in a press release.
+              India faces a significant shortage of blood, with an estimated shortage of 1 million units, which equals around 
+              2.5 donations per 1,000 eligible donors. The shortage of blood products is a major public health problem in India, 
+              and it is estimated that nearly 12,000 people lose their lives every single day due to the lack of blood products
+              As of 2020, 63 districts in India do not have a blood center, and the present blood transfusion service is 
+              fragmented with a little over 3,700 blood centers of which about 70% are located in eight states only
               </p>
               <Button
                 type="primary"
@@ -277,7 +284,7 @@ const LandingPage = () => {
       <div className="py-12">
         <div className="border-2 w-10/12 p-auto m-auto rounded-2xl py-6 bg-gradient-to-r from-red-700 via-red-400 to-violet-400">
           <div className="p-auto m-auto w-3/12 text-2xl text-white font-bold">
-            Become a blood donator Be a life Line , Donate Blood
+          Become a blood donor<br/>Be a life Line, Donate Blood<br/>
           </div>
           <div className="p-auto m-auto w-6/12 text-white mt-4 text-center">
             Any healthy adult, both male and female, can donate blood. Men can

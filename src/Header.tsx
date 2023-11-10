@@ -3,8 +3,10 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Button, Popover } from "antd";
+import { Button, Popover ,Image} from "antd";
 import { Link } from "react-router-dom";
+import Logo from "./Logo 1.svg";
+
 
 const content = (
   <div>
@@ -16,6 +18,44 @@ const content = (
       <p className=" text-red-500">Register as a Organization</p>
     </Link>
   </div>
+  
+);
+const aboutcontent = (
+  <div>
+    <Link to="aboutus" className="!no-underline">
+      <p className="text-red-500">Who we Are</p>
+    </Link>
+
+    <Link to="vision" className="!no-underline">
+      <p className=" text-red-500">Vision & Mission</p>
+    </Link>
+
+    <Link to="/" className="!no-underline">
+      <p className=" text-red-500">Board Members</p>
+    </Link>
+  </div>
+  
+);
+
+const servicemenu = (
+  <div>
+    <Link to="#" className="!no-underline">
+      <p className="text-red-500">Donor Registration</p>
+    </Link>
+
+    <Link to="#" className="!no-underline">
+      <p className=" text-red-500">Blood bank & Organizations</p>
+    </Link>
+
+    <Link to="#" className="!no-underline">
+      <p className=" text-red-500"> Medical College</p>
+    </Link>
+
+    <Link to="#" className="!no-underline">
+      <p className=" text-red-500"> NGO</p>
+    </Link>
+  </div>
+  
 );
 
 const Header = () => {
@@ -25,10 +65,17 @@ const Header = () => {
       className="bg-body-tertiary !w-full !bg-white -pr-0"
       fixed="top"
     >
+      <Image
+    style={{ marginLeft:'60px', height:'70px' }}
+         src={Logo}
+         />
       <Container className="!-mx-0 flex justify-between items-center !w-screen">
         <div className=" w-[50%] ml-8">
-          <Navbar.Brand href="#home" className="font-bold !text-red-500">
-            Happy Blood Donor
+          <Navbar.Brand href="#home" className="font-bold !text-red-500 @font-family: -Sniglet; "  >
+            {/*<div style={{color: '#EB3738', fontSize: 16, fontFamily: 'Sniglet', fontWeight: '800', wordWrap: 'break-word'}}>
+           
+          </div>*/}
+            HAPPY DONORS
           </Navbar.Brand>
         </div>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -36,25 +83,29 @@ const Header = () => {
           <div>
             <Nav className="me-auto flex gap-[30px]">
               <Nav.Link
-                href="#home"
+                href="/"
                 className="text-black hover:!text-red-500 hover:font-semibold"
               >
                 Home
               </Nav.Link>
+              <Popover content={aboutcontent} trigger='click'>
               <Nav.Link
                 href="#link"
                 className="text-black hover:!text-red-500 hover:font-semibold"
               >
-                Find a Donor
+                About Us
               </Nav.Link>
+              </Popover>
+              <Popover content={servicemenu} trigger='click'>
               <Nav.Link
-                href="#link"
+                href="/"
                 className="text-black hover:!text-red-500 hover:font-semibold"
               >
-                About
+                Services
               </Nav.Link>
+              </Popover>
               <Nav.Link
-                href="#link"
+                href="contactus"
                 className="text-black hover:!text-red-500 hover:font-semibold"
               >
                 Contact Us
@@ -82,3 +133,6 @@ const Header = () => {
 };
 
 export default Header;
+
+
+

@@ -10,7 +10,7 @@ const LandingSearch = () => {
           <div className="p-auto m-auto w-10/12   bg-gray-200">
             <div className="px-12 pt-4">
             <h1>Search a Donor</h1>
-            <p className="font-semibold text-md"> we are more than </p>
+            <p className="font-semibold text-md">  </p>
             </div>
             <div className="my-4 px-6 pb-4 flex justify-around gap-[5px]">
               <div>
@@ -18,14 +18,25 @@ const LandingSearch = () => {
                   className="w-[266px]"
                   placeholder="Blood Group"
                   options={[
-                    { value: "O+", label: "O+" },
-                    { value: "O-", label: "O-" },
                     { value: "A+", label: "A+" },
                     { value: "A-", label: "A-" },
-                    { value: "B+", label: "B+" },
-                    { value: "B-", label: "B-" },
+                    { value: "A1+", label: "A1+" },
+                    { value: "A1-", label: "A1-" },
+                    { value: "A1B+", label: "A1B+" },
+                    { value: "A1B-", label: "A1B-" },
+                    { value: "A2+", label: "A2+" },
+                    { value: "A2-", label: "A2-" },
+                    { value: "A2B+", label: "A2B+" },
+                    { value: "A2B-", label: "A2B-" },
                     { value: "AB+", label: "AB+" },
                     { value: "AB-", label: "AB-" },
+                    { value: "B+", label: "B+" },
+                    { value: "B-", label: "B-" },
+                    { value: "Bombay Blood Group", label: "Bombay Blood Group" },
+                    { value: "INRA", label: "INRA" },
+                    { value: "O+", label: "O+" },
+                    { value: "O-", label: "O-" },
+                    
                   ]}
                 />
               </div>
@@ -45,9 +56,11 @@ const LandingSearch = () => {
                   className="w-[266px]"
                   placeholder="Type of service"
                   options={[
-                    { value: "nellore", label: "Nellore" },
-                    { value: "tirupathi", label: "Tirupathi" },
-                    { value: "krishna", label: "Krishna" },
+                    { value: "Whole Blood", label: "Whole Blood" },
+                    { value: "Red Cells", label: "Red cells" },
+                    { value: "Platelets", label: "Platelets" },
+                    { value: "Plasma", label: "Plasma" },
+                    
                   ]}
                 />
               </div>

@@ -6,6 +6,9 @@ import LandingPage from "./LandingPage";
 import RegisterDonor from "./RegisterDonor";
 import RegisterOrganization from "./RegisterOrganization";
 import FindDonor from "./FindDonor";
+import Vision from "./vision";
+import Aboutwwa from "./Aboutwwa";
+import Contactus from "./Contactus";
 
 const App = () => {
   return (
@@ -15,6 +18,10 @@ const App = () => {
         <Route path="/registerdonor" element={ <RegisterDonor/> } />
         <Route path="/registerorganization" element={ <RegisterOrganization/> } />
         <Route path="/finddonor" element={ <FindDonor/> } />
+        <Route path="/aboutus" element={ <Aboutwwa/> } />
+        <Route path="/vision" element={ <Vision/> } />
+        <Route path="/contactus" element={ < Contactus/> } />
+        
       </Routes>
     </div>
   );

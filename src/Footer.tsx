@@ -5,7 +5,7 @@ const Footer = () => {
     <div>
       <div className="w-8/12 p-auto m-auto text-center text-white border-b-2 flex">
         <div className="w-1/3">
-          <p className="text-left font-bold text-2xl">Happy Blood Donor</p>
+          <p className="text-left font-bold text-2xl">Happy Donors</p>
           <div className="text-left">
             <p>Ashok Nagar,</p>
             <p>Chennai , Tamil Nadu</p>
@@ -56,7 +56,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="p-auto m-auto text-white">
-        <p className="text-center mt-8 pb-8">Copyright © HADO 2023</p>
+        <p className="text-center mt-8 pb-8">Copyright © Happy donors 2023</p>
       </div>
     </div>
   );
