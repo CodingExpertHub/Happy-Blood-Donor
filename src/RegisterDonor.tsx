@@ -1,14 +1,19 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import Header from "./Header";
 import { Button, Checkbox, Input, InputNumber, Radio, Select } from "antd";
-import OtpInput from "react-otp-input";
 import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from 'dayjs';
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import type { DatePickerProps } from "antd";
 import { DatePicker, Space } from "antd";
 import TextArea from "antd/es/input/TextArea";
+import { Form, Typography, notification } from 'antd';
+import { UsersignUp, UserSignUpsendOTP } from "./api/authendication";
+
+
+
+const { Text } = Typography;
 
 dayjs.extend(customParseFormat);
 
@@ -19,33 +24,92 @@ const monthFormat = "MM/YYYY";
 const RegisterDonor = () => {
   const registerFields1 = [
     "Donor Name",
-    "Set Password",
     "Email address",
     "Phone Number",
-    "Get OTP",
-    "Previous Donation Details",
+    "previous donation date",
+    "Location"
   ];
   const registerFields2 = ["Gender", "Age", "Blood Group"];
-  const addressFields1 = ["District", "City"];
-  const addressFields2 = ["Pincode", "Address"];
-  const [otp, setOTP] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState<any>();
+  const addressFields1 = ["Location"];
+  const navigate = useNavigate();
+ 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState("M");
+  const [dob, setDob] =  useState("");
+  const [bloodGroup, setBloodGroup] = useState(""); 
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [user_Type, setUser_Type] = useState("user");
+  const [lastdonationdate, setLastdonationdate] = useState("");
+  //const [lastdonationdate, setLastdonationdate] = useState<Dayjs | null>(dayjs());
+  const [location, setLocation] =  useState("");
+  const [isVerifyEmailDisabled, setIsVerifyEmailDisabled] = useState(false);
+  
+ 
+  
+
+  const handleOTPSubmit = async () => {
+    try {
+      setIsVerifyEmailDisabled(true);
+      const result = await UserSignUpsendOTP(email);
+      setOtpSent(true);
+      setIsVerifyEmailDisabled(false);
+    } catch (error) {
+      setIsVerifyEmailDisabled(false);
+      console.log(error);
+    }
+  };
+
+
+  const handleSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      const result = await UsersignUp ( firstName, lastName, gender, dob, bloodGroup, mobile,  email, otp, user_Type, lastdonationdate, location );
+      setIsSubmitting(false);
+
+      if (result && result.signup === "success") {
+        notification.success({
+          message: 'Registration Successful!',
+          description: 'You have successfully registered. Redirecting to login page.',
+        });
+        navigate("/logindonor");
+      } else {
+        notification.error({
+          message: 'Registration Failed',
+          description: 'Registration was unsuccessful. Please try again or contact support.',
+        });
+        navigate("/registerdonor");
+        // Handle unsuccessful registration
+        // Display an error message or redirect to a different page
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      console.log(error);
+    }
+  };
+
+
+
+
+
+  // const handleDateChange = (date: any) => {
+  //   setLastdonationdate(date); // Assuming date is in the format you expect
+  // };
+  const handleBloodGroupChange = (value: string) => {
+    setBloodGroup(value);
+  };
+
 
   const onGenderChange = (e: any) => {
     console.log("radio checked", e.target.value);
     setGender(e.target.value);
   };
-  const handleOTPChange = (value: any) => {
-    if (/^\d*$/.test(value) && value.length <= 4) {
-      setOTP(value);
-    }
-  };
-  const handleOTPSubmit = () => {
-    // Perform the OTP validation or submit the OTP as needed
-    console.log("Submitted OTP:", otp);
-  };
-
+ 
+ 
   return (
     <div>
       <Header />
@@ -68,54 +132,89 @@ const RegisterDonor = () => {
           </div>
           <div className="w-5/12 pr-8">
             <div className="flex gap-[20px]">
-              <Input placeholder="First Name" className="w-[210px]" />
-              <Input placeholder="Last Name" className="w-[210px]" />
-            </div>
-            <div className="mt-3 pr-14">
-              <Input.Password placeholder="Enter password" />
-            </div>
-            <div className="mt-3 pr-14">
-              <Input type="email" placeholder="must contain @ symbol" />
-            </div>
-            <div className="mt-3 w-[89%]  border-1 rounded-md">
-              <PhoneInput
-                placeholder="Enter phone number"
-                value={phoneNumber}
-                onChange={setPhoneNumber}
-                className="h-[35px] flex gap-[20px] font-light text-sm pl-4"
+              <Input 
+                placeholder="First Name" 
+                className="w-[210px]" 
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              <Input 
+                placeholder="Last Name" 
+                className="w-[210px]" 
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
               />
             </div>
-            <div className="mt-3 pr-14 flex gap-[78px]">
-              <OtpInput
-                value={otp}
-                onChange={setOTP}
-                numInputs={4}
-                renderSeparator="&nbsp;&nbsp;"
-                renderInput={(props) => (
-                  <input {...props} className="border-2 !w-[26px] h-[26px]" />
-                )}
-              />
+            
+            <div className="mt-3 pr-14 w-[100%]">
+              <Input.Search
+               type="email"
+               placeholder="must contain @ symbol"
+               value={email}
+               onChange={(e) => setEmail(e.target.value)}
+               disabled={otpSent}
+               enterButton={
+          <Button
+            type="primary" 
+            loading={isVerifyEmailDisabled}
+            onClick={handleOTPSubmit}
+            style={{ color: 'red' }}   
+          >
+            Send OTP
+          </Button>
+        }
+        onSearch={handleOTPSubmit}
+      />
 
-              <Button
-                type="primary"
-                className="ml-8 bg-black hover:!bg-black px-12 !items-center justify-center !pb-7"
-              >
-                Verify & Proceed
-              </Button>
-            </div>
-            <div>
-              <Button
-                type="primary"
-                className="mt-2 bg-black hover:!bg-black px-12 !items-center justify-center !pb-7"
-              >
-                Re-send
-              </Button>
+      {otpSent && (
+        <Text style={{ fontSize: 'sm', marginTop: '0.5rem', color: 'gray.500' }}>
+          OTP sent to your email. Please enter the OTP below.
+        </Text>
+      )}
+
+      {otpSent && (
+        <Form.Item
+          label="OTP"
+          required
+          style={{ marginBottom: '1rem' }}
+        >
+          <Input
+            type="text"
+            value={otp}
+            onChange={(e) => setOtp(e.target.value)}
+          />
+        </Form.Item>
+      )}
+    </div>
+
+            <div className="mt-3 w-[87%]  border-1 rounded-md">
+            <Input
+              type="tel"
+              placeholder="phone number"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+            />
+             
             </div>
             <div className="flex gap-[30px] mt-3 pr-14">
-              <DatePicker
-                format={monthFormat}
-                picker="month"
+              
+            <input
+
+             type="date"
+             className="w-full"
+             value={lastdonationdate} // Convert to Dayjs here
+             onChange={(e) => setLastdonationdate(e.target.value)}
+          
+        />
+            </div>
+            <div className="flex gap-[30px] mt-3 pr-14">
+              
+            <Input 
+                placeholder="location" 
                 className="w-full"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)} 
+
               />
             </div>
           </div>
@@ -128,23 +227,27 @@ const RegisterDonor = () => {
           <div className="w-4/12">
             <div>
               <Radio.Group onChange={onGenderChange} value={gender}>
-                <Radio value={"M"}>Male</Radio>
-                <Radio value={"F"}>Female</Radio>
-                <Radio value={"O"}>Other</Radio>
+                <Radio value={"male"}>Male</Radio>
+                <Radio value={"female"}>Female</Radio>
+                <Radio value={"others"}>Other</Radio>
               </Radio.Group>
             </div>
             <div className="mt-3">
-              <InputNumber
-                min={18}
-                max={100}
-                placeholder="Age"
+              <input
+                type="date"
+                placeholder="Date of birth"
                 className="w-full"
+                value={dob}
+                onChange={(e) => setDob (e.target.value)} 
+
               />
             </div>
             <div className="mt-3">
               <Select
                 className="w-full"
                 placeholder="Blood Group"
+                value={bloodGroup}
+                onChange={handleBloodGroupChange}
                 options={[
                   { value: "O+", label: "O+" },
                   { value: "O-", label: "O-" },
@@ -160,53 +263,9 @@ const RegisterDonor = () => {
           </div>
         </div>
       </div>
-      <p className="text-xl font-bold w-10/12 p-auto m-auto my-4">Address</p>
 
       <div className="pb-8">
-        <div className="flex p-auto m-auto w-10/12">
-          <div className="w-2/12">
-            {addressFields1.map((rfield1) => (
-              <p className="font-semibold">{rfield1}</p>
-            ))}
-          </div>
-          <div className="w-5/12 pr-20">
-            <div>
-              <Select
-                className="w-full"
-                placeholder="District"
-                options={[
-                  { value: "nellore", label: "Nellore" },
-                  { value: "tirupathi", label: "Tirupathi" },
-                  { value: "krishna", label: "Krishna" },
-                ]}
-              />
-            </div>
-            <div className="mt-3">
-              <Input placeholder="City" className="w-full" />
-            </div>
-          </div>
-          <div className="w-1/12">
-            {addressFields2.map((rfield1) => (
-              <p className="font-semibold">{rfield1}</p>
-            ))}
-          </div>
-          <div className="w-4/12">
-            <div>
-              <InputNumber
-                maxLength={6}
-                placeholder="Pincode"
-                className="w-full"
-              />
-            </div>
-            <div className="mt-3">
-              <TextArea
-                rows={4}
-                placeholder="Address"
-                className="!resize-none"
-              />
-            </div>
-          </div>
-        </div>
+        
         <div className="mt-8">
           <div className="p-auto m-auto w-10/12 text-center">
             <Checkbox className=" text-center items-center align-middle">
@@ -218,7 +277,14 @@ const RegisterDonor = () => {
             </Checkbox>
           </div>
           <div className="mt-6 text-center">
-          <Button type="primary" className='ml-8 bg-red-800 hover:!bg-red-900 px-12 !items-center justify-center !pb-7'>Register</Button>
+          <Button 
+            type="primary" 
+            className='ml-8 bg-red-800 hover:!bg-red-900 px-12 !items-center justify-center !pb-7'
+            loading={isSubmitting}
+            onClick={handleSubmit}
+          >
+            Register
+          </Button>
           </div>
           
         </div>
