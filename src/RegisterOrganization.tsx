@@ -24,8 +24,9 @@ const monthFormat = "MM/YYYY";
 const RegisterOrganisation = () => {
   const registerFields1 = [
     "Organisation Name",
-    "Email address",
     "Phone Number",
+    "Email address",
+    
     
   ];
   const registerFields2 = ["Category", "Location"];
@@ -46,21 +47,70 @@ const RegisterOrganisation = () => {
  
   
 
+  // const handleOTPSubmit = async () => {
+  //   try {
+  //     setIsVerifyEmailDisabled(true);
+  //     const result = await OrgSignUpsendOTP(email);
+  //     setOtpSent(true);
+  //     setIsVerifyEmailDisabled(false);
+  //   } catch (error) {
+  //     setIsVerifyEmailDisabled(false);
+  //     console.log(error);
+  //   }
+  // };
   const handleOTPSubmit = async () => {
     try {
+     // form.validateFields(['email']);
+
       setIsVerifyEmailDisabled(true);
       const result = await OrgSignUpsendOTP(email);
-      setOtpSent(true);
-      setIsVerifyEmailDisabled(false);
+
+      if (result === "This User Allready exist in our db") {
+        // Display notification for unregistered email
+        notification.warning({
+          message: 'User already Registered',
+          description: 'The provided email is registered. Please login up or use a different email.',
+        });
+      } else if (result === "Invalid Details") {
+        // Display notification for invalid details
+        notification.error({
+          message: 'Invalid Details',
+          description: 'The provided details are invalid. Please check your information and try again.',
+        });
+      } else {
+        // If the user exists, proceed with OTP and show relevant notifications
+        setOtpSent(true);
+        setIsVerifyEmailDisabled(false);
+        notification.success({
+          message: 'Otp sent Successfully check your mail',
+          description: 'Email sent Successfully',
+        });  
+
+      }  
     } catch (error) {
       setIsVerifyEmailDisabled(false);
+      notification.error({
+        message: 'Otp sent Failed check mail id',
+        description: 'OTP was unsuccessful. Please try again or contact support.',
+      });
       console.log(error);
     }
+    
   };
 
 
   const handleSubmit = async () => {
     try {
+
+      if (!orgName || !mobile || !email || !category || !location || !otp) {
+        notification.error({
+          message: 'Validation Error',
+          description: 'Please fill in all the required fields.',
+        });
+        return;
+      }
+
+
       setIsSubmitting(true);
       const result = await OrgsignUp ( orgName, category, email, otp, mobile, user_Type, location );
       setIsSubmitting(false);
@@ -125,6 +175,15 @@ const RegisterOrganisation = () => {
               />
              
             </div>
+            <div className="mt-3 w-[87%]  border-1 rounded-md">
+            <Input
+              type="tel"
+              placeholder="phone number"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+            />
+             
+            </div>
             
             <div className="mt-3 pr-14 w-[100%]">
               <Input.Search
@@ -167,15 +226,7 @@ const RegisterOrganisation = () => {
       )}
     </div>
 
-            <div className="mt-3 w-[87%]  border-1 rounded-md">
-            <Input
-              type="tel"
-              placeholder="phone number"
-              value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
-            />
-             
-            </div>
+            
             {/* <div className="flex gap-[30px] mt-3 pr-14">
             <Input 
                 placeholder="location" 

@@ -1,135 +1,164 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
 import Header from "./Header";
 import { Button, Checkbox, Input, InputNumber, Radio, Select } from "antd";
 import "react-phone-number-input/style.css";
-import dayjs, { Dayjs } from 'dayjs';
+import moment from 'moment';
+import dayjs from 'dayjs';
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import type { DatePickerProps } from "antd";
-import { DatePicker, Space } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { Form, Typography, notification } from 'antd';
+import { Form, Typography, notification,  DatePicker } from 'antd';
 import { UsersignUp, UserSignUpsendOTP } from "./api/authendication";
 
 
 
 const { Text } = Typography;
 
-dayjs.extend(customParseFormat);
+// dayjs.extend(customParseFormat);
 
-const { RangePicker } = DatePicker;
+// //const { RangePicker } = DatePicker;
 
-const monthFormat = "MM/YYYY";
+// const monthFormat = "MM/YYYY";
 
 const RegisterDonor = () => {
   const registerFields1 = [
     "Donor Name",
-    "Phone Number",
-    "previous donation date",
     "Email address",
     
-   
+    "Phone Number",
+    "previous donation date",
+    "Location"
   ];
-  const registerFields2 = ["Gender", "Dob", "BloodGroup",  "Location"];
+  const registerFields2 = ["Gender", "Dob", "Blood Group"];
   const addressFields1 = ["Location"];
   const navigate = useNavigate();
-  const history = createBrowserHistory();
-  const [form] = Form.useForm();
+ 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [gender, setGender] = useState("M");
-  const [dob, setDob] =  useState("");
-  const [bloodGroup, setBloodGroup] = useState(""); 
+  const [dob, setDob] = useState("");
+  const [bloodGroup, setBloodGroup] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [user_Type, setUser_Type] = useState("user");
   const [lastdonationdate, setLastdonationdate] = useState("");
-  //const [lastdonationdate, setLastdonationdate] = useState<Dayjs | null>(dayjs());
-  const [location, setLocation] =  useState("");
+  const [location, setLocation] = useState("");
   const [isVerifyEmailDisabled, setIsVerifyEmailDisabled] = useState(false);
+  const [firstNameError, setFirstNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [genderError, setGenderError] = useState("");
+  const [dobError, setDobError] = useState("");
+  const [bloodGroupError, setBloodGroupError] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [mobileError, setMobileError] = useState("");
+  const [lastDonationDateError, setLastDonationDateError] = useState("");
+  const [locationError, setLocationError] = useState("");
   
  
   
 
   const handleOTPSubmit = async () => {
     try {
-      form.validateFields(['email']);
-
       setIsVerifyEmailDisabled(true);
       const result = await UserSignUpsendOTP(email);
-
-      if (result === "This User Allready exist in our db") {
-        // Display notification for unregistered email
-        notification.warning({
-          message: 'User already Registered',
-          description: 'The provided email is registered. Please login up or use a different email.',
-        });
-      } else if (result === "Invalid Details") {
-        // Display notification for invalid details
-        notification.error({
-          message: 'Invalid Details',
-          description: 'The provided details are invalid. Please check your information and try again.',
-        });
-      } else {
-        // If the user exists, proceed with OTP and show relevant notifications
-        setOtpSent(true);
-        setIsVerifyEmailDisabled(false);
-        notification.success({
-          message: 'Otp sent Successfully check your mail',
-          description: 'Email sent Successfully',
-        });  
-
-      }  
+      setOtpSent(true);
+      setIsVerifyEmailDisabled(false);
     } catch (error) {
       setIsVerifyEmailDisabled(false);
-      notification.error({
-        message: 'Otp sent Failed check mail id',
-        description: 'OTP was unsuccessful. Please try again or contact support.',
-      });
       console.log(error);
     }
-    
   };
+
   const handleSubmit = async () => {
     try {
+      // Reset errors
+      setFirstNameError("");
+      setLastNameError("");
+      setGenderError("");
+      setDobError("");
+      setBloodGroupError("");
+      setEmailError("");
+      setMobileError("");
+      setLastDonationDateError("");
+      setLocationError("");
+
       // Form validation
-      if (!firstName || !lastName || !gender || !dob || !bloodGroup || !mobile || !email || !lastdonationdate || !location || !otp) {
-        notification.error({
-          message: 'Validation Error',
-          description: 'Please fill in all the required fields.',
-        });
+      let isValid = true;
+
+      if (!firstName) {
+        setFirstNameError("Please enter your first name");
+        isValid = false;
+      }
+
+      if (!lastName) {
+        setLastNameError("Please enter your last name");
+        isValid = false;
+      }
+
+      if (!gender) {
+        setGenderError("Please select your gender");
+        isValid = false;
+      }
+
+      if (!dob) {
+        setDobError("Please enter your date of birth");
+        isValid = false;
+      }
+
+      if (!bloodGroup) {
+        setBloodGroupError("Please select your blood group");
+        isValid = false;
+      }
+
+      if (!email) {
+        setEmailError("Please enter your email address");
+        isValid = false;
+      }
+
+      if (!mobile) {
+        setMobileError("Please enter your phone number");
+        isValid = false;
+      }
+
+      if (!lastdonationdate) {
+        setLastDonationDateError("Please enter your last donation date");
+        isValid = false;
+      }
+
+      if (!location) {
+        setLocationError("Please enter your location");
+        isValid = false;
+      }
+
+      if (!isValid) {
         return;
       }
-  
+
       setIsSubmitting(true);
       const result = await UsersignUp(firstName, lastName, gender, dob, bloodGroup, mobile, email, otp, user_Type, lastdonationdate, location);
       setIsSubmitting(false);
-  
+
       if (result && result.signup === 'success') {
         notification.success({
           message: 'Registration Successful!',
           description: 'You have successfully registered. Redirecting to the login page.',
         });
-        history.push('/logindonor');
-        window.location.reload();
+        navigate('/logindonor');
       } else {
         notification.error({
           message: 'Registration Failed',
           description: 'Registration was unsuccessful. Please try again or contact support.',
         });
-        history.push('/registerdonor');
-        window.location.reload();
+        navigate('/registerdonor');
       }
     } catch (error) {
       setIsSubmitting(false);
       console.log(error);
     }
   };
-  
 
 
 
@@ -138,14 +167,15 @@ const RegisterDonor = () => {
   // const handleDateChange = (date: any) => {
   //   setLastdonationdate(date); // Assuming date is in the format you expect
   // };
-  const handleBloodGroupChange = (value: string) => {
-    setBloodGroup(value);
-  };
+  // const handleBloodGroupChange = (value: string) => {
+  //   setBloodGroup(value);
+  // };
 
 
   const onGenderChange = (e: any) => {
     console.log("radio checked", e.target.value);
     setGender(e.target.value);
+    setGenderError("");
   };
  
  
@@ -169,61 +199,41 @@ const RegisterDonor = () => {
               )
             )}
           </div>
-        
-         
           <div className="w-5/12 pr-8">
             <div className="flex gap-[20px]">
               <Input 
                 placeholder="First Name" 
                 className="w-[210px]" 
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => {
+                  setFirstName(e.target.value);
+                  setFirstNameError(""); // Reset error when the user starts typing
+                }}
               />
+              {firstNameError && <p className="text-red-500">{firstNameError}</p>}
               <Input 
                 placeholder="Last Name" 
                 className="w-[210px]" 
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => {
+                  setLastName(e.target.value);
+                  setLastNameError(""); // Reset error when the user starts typing
+                }}
               />
+              {lastNameError && <p className="text-red-500">{lastNameError}</p>}
             </div>
-            <div className="mt-3 w-[87%]  border-1 rounded-md">
-              
-              <Input
-                
-                type="tel"
-                placeholder="phone number"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-              />
-               
-              </div>
-              <div className="flex gap-[30px] mt-3 pr-14">
-                
-              <Input
-  
-               type="date"
-               className="w-full"
-               value={lastdonationdate} // Convert to Dayjs here
-               onChange={(e) => setLastdonationdate(e.target.value)}
             
-          />
-              </div>
-           
             <div className="mt-3 pr-14 w-[100%]">
-            <Form.Item
-            name="email"
-            //form={form} 
-            rules={[
-              { required: true, message: 'Please enter your email!' },
-              { type: 'email', message: 'Please enter a valid email address!' },
-            ]}
-          >
               <Input.Search
                type="email"
                placeholder="must contain @ symbol"
                value={email}
-               onChange={(e) => setEmail(e.target.value)}
+               //onChange={(e) => setEmail(e.target.value)}
                disabled={otpSent}
+               onChange={(e) => {
+                setEmail(e.target.value);
+                setEmailError(""); // Reset error when the user starts typing
+              }}
                enterButton={
           <Button
             type="primary" 
@@ -236,7 +246,9 @@ const RegisterDonor = () => {
         }
         onSearch={handleOTPSubmit}
       />
-</Form.Item>
+       {emailError && <p className="text-red-500">{emailError}</p>}
+       
+
       {otpSent && (
         <Text style={{ fontSize: 'sm', marginTop: '0.5rem', color: 'gray.500' }}>
           OTP sent to your email. Please enter the OTP below.
@@ -258,8 +270,56 @@ const RegisterDonor = () => {
       )}
     </div>
 
+            <div className="mt-3 w-[87%]  border-1 rounded-md">
+            <Input
+              type="tel"
+              placeholder="phone number"
+              value={mobile}
+             // onChange={(e) => setMobile(e.target.value)}
+             onChange={(e) => {
+              setMobile(e.target.value);
+              setMobileError(""); // Reset error when the user starts typing
+            }}
+            />
+             {mobileError && <p className="text-red-500">{mobileError}</p>}
+            </div>
+            <div className="flex gap-[30px] mt-3 pr-14">
+              
+            <Input
+             type="date"
+             placeholder="last donation date"
+             className="w-full"
+             value={lastdonationdate}
+             onChange={(e) => {
+              setLastdonationdate(e.target.value);
+              setLastDonationDateError(""); // Reset error when the user starts typing
+            }}
+             //value={dayjs(lastdonationdate)}
+            // value={lastdonationdate ? dayjs(lastdonationdate, 'YYYY-MM-DD') : null}
+            // onChange={(date, dateString) => setLastdonationdate(dateString)}
+            //  onChange={(date, dateString) => {
+            //   setLastdonationdate(dateString);
+            //   setLastDonationDateError(""); // Reset error when the user selects a date
+            // }}
+        />
+        {lastDonationDateError && <p className="text-red-500">{lastDonationDateError}</p>}
            
-           
+            </div>
+            <div className="flex gap-[30px] mt-3 pr-14">
+              
+            <Input 
+                placeholder="location" 
+                className="w-full"
+                value={location}
+                //onChange={(e) => setLocation(e.target.value)} 
+                onChange={(e) => {
+                  setLocation(e.target.value);
+                  setLocationError(""); // Reset error when the user starts typing
+                }}
+
+              />
+              {locationError && <p className="text-red-500">{locationError}</p>}
+            </div>
           </div>
 
           <div className="w-1/12 flex flex-col gap-[6px]">
@@ -274,23 +334,37 @@ const RegisterDonor = () => {
                 <Radio value={"female"}>Female</Radio>
                 <Radio value={"others"}>Other</Radio>
               </Radio.Group>
+              {genderError && <p className="text-red-500">{genderError}</p>}
             </div>
-            <div className="mt-4">
-              <Input
+            <div className="mt-3">
+            <Input
                 type="date"
                 placeholder="Date of birth"
                 className="w-full"
                 value={dob}
-                onChange={(e) => setDob (e.target.value)} 
-
+                onChange={(e) => {
+                  setDob(e.target.value);
+                  setDobError(""); // Reset error when the user starts typing
+               }}
+                //value={dayjs(dob)}
+              // onChange={(date, dateString) => setDob(dateString)}
+              // onChange={(date, dateString) => {
+              //   setDob(dateString);
+              //   setDobError(""); // Reset error when the user selects a date
+              // }}
               />
+               {dobError && <p className="text-red-500">{dobError}</p>}
             </div>
             <div className="mt-3">
               <Select
                 className="w-full"
                 placeholder="Blood Group"
                 value={bloodGroup}
-                onChange={handleBloodGroupChange}
+                //onChange={handleBloodGroupChange}
+                onChange={(value) => {
+                  setBloodGroup(value);
+                  setBloodGroupError(""); // Reset error when the user selects a blood group
+                }}
                 options={[
                   { value: "O+", label: "O+" },
                   { value: "O-", label: "O-" },
@@ -302,21 +376,12 @@ const RegisterDonor = () => {
                   { value: "AB-", label: "AB-" },
                 ]}
               />
+              {bloodGroupError && <p className="text-red-500">{bloodGroupError}</p>}
+     
             </div>
-            <div className="mt-3">
-              
-              <Input 
-                  placeholder="location" 
-                  className="w-full"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)} 
-  
-                />
-              </div>
           </div>
         </div>
       </div>
-      
 
       <div className="pb-8">
         
@@ -342,11 +407,8 @@ const RegisterDonor = () => {
           </div>
           
         </div>
-        
       </div>
-      
     </div>
-    
   );
 };
 

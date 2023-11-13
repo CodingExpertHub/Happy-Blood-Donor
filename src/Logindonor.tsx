@@ -15,6 +15,7 @@ const LandingPage = () => {
     
     const history = createBrowserHistory();
     const [isError, setIsError] = useState(false);
+    const [form] = Form.useForm();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [email, setEmail] = useState<string>('');
     const [otp, setOtp] = useState<string>('');
@@ -55,10 +56,12 @@ const LandingPage = () => {
             console.log(data.userData.user_type);
             console.log(data.userData.user_id);
             
-    
-            alert("Login successful!");
             
             localStorage.setItem("token", JSON.stringify(data));
+            notification.success({
+              message: 'Donor has login Successful!',
+              description: 'You have successfully login.',
+            });
             history.push("/donorprofile");
             window.location.reload();
             
@@ -67,38 +70,98 @@ const LandingPage = () => {
             setEmail("");
             setOtp("");
             setIsError(false);
-          } else {
+           } 
+          else {
+          //   // Check for the specific error message
+          //  if (data.success === false ) {
+          //     // Add notification for "Invalid Otp" error
+          //     console.log("Invalid OTP error:", data.error);
+          //     notification.error({
+          //       message: 'Donor Failed to login',
+          //       description: 'Invalid OTP. Please enter a valid OTP.',
+          //     });
+          //   } else if (data.error === "Invalid Details") {
+          //     // Add notification for "Invalid Details" error
+          //     notification.error({
+          //       message: 'Donor Failed to login',
+          //       description: 'Invalid login details. Please check your email and OTP.',
+          //     });
+          //   } else {
             // Handle error response
             setIsError(true);
-          }
+            notification.error({
+              message: 'Donor Failed to login',
+              description: 'login was unsuccessful. Please try again or contact support.',
+            });
+          //}
+        }
         } catch (error) {
           // Handle network errors
           setIsError(true);
+          notification.error({
+            message: 'Donor Failed to login',
+            description: 'Invalid OTP. Please enter a valid OTP.',
+          });
+
           console.log("Network error:", error);
         } finally {
           setIsSendLoginDisabled(false);
         }
       };
 
-    const handleOtpSubmit = async () => {
+      const handleOtpSubmit = async () => {
         try {
+          // Validate the form fields before sending OTP
+          form.validateFields(['email']);
+      
           // Disable the button to prevent multiple clicks
           setIsSendOTPDisabled(true);
-    
+      
           const result = await UserloginsendOTP(email);
-          setIsShowLoginButton(true);
-
-          setShowOtp(true);
-    
-          // Enable the button after a certain period of time (e.g., 5 seconds)
-          setTimeout(() => {
+      
+          if (result === "This User Not Exist In our Db") {
+            // Display notification for unregistered email
+            notification.warning({
+              message: 'User Not Found',
+              description: 'The provided email is not registered. Please sign up or use a different email.',
+            });
+      
+            // Enable the button
             setIsSendOTPDisabled(false);
-          }, 5000);
+          } else if (result === "Invalid Details") {
+            // Display notification for invalid details
+            notification.error({
+              message: 'Invalid Details',
+              description: 'The provided details are invalid. Please check your information and try again.',
+            });
+      
+            // Enable the button
+            setIsSendOTPDisabled(false);
+          } else {
+            // If the user exists, proceed with OTP and show relevant notifications
+            setIsShowLoginButton(true);
+            setShowOtp(true);
+            notification.success({
+              message: 'Otp sent Successfully check your mail',
+              description: 'Email sent Successfully',
+            });
+      
+            // Enable the button after a certain period of time (e.g., 5 seconds)
+            setTimeout(() => {
+              setIsSendOTPDisabled(false);
+            }, 5000);
+          }
         } catch (error) {
           setIsSendOTPDisabled(false);
+          notification.error({
+            message: 'Otp sent Failed check mail id',
+            description: 'OTP was unsuccessful. Please try again or contact support.',
+          });
           console.log(error);
         }
       };
+      
+      
 
 
   return (
@@ -125,14 +188,18 @@ const LandingPage = () => {
         }}
         bordered={false}
       >
-        <Form
+       <Form
+          form={form} // Add this line to connect the form instance
           name="loginForm"
           onFinish={handleUserlogin}
           initialValues={{ remember: true }}
         >
           <Form.Item
             name="email"
-            rules={[{ required: true, message: 'Please enter your email!' }]}
+            rules={[
+              { required: true, message: 'Please enter your email!' },
+              { type: 'email', message: 'Please enter a valid email address!' },
+            ]}
           >
             <Input
               prefix={<MailOutlined className="site-form-item-icon" />}
@@ -143,6 +210,7 @@ const LandingPage = () => {
             />
           </Form.Item>
 
+         
           {showOtp && (
             <Form.Item
               name="otp"
@@ -158,21 +226,23 @@ const LandingPage = () => {
             </Form.Item>
           )}
 
+
           <Form.Item>
-            {!showOtp ? (
-              <Button
-                type="primary"
-                htmlType="button" // Change this to "button" to prevent form submission
-                onClick={handleOtpSubmit}
-                style={{
-                  width: '100%',
-                  backgroundColor: '#3498db',
-                  border: '1px solid #3498db',
-                }}
-              >
-                Get OTP
-              </Button>
-            ) : (
+          {!showOtp ? (
+            <Button
+              type="primary"
+              htmlType="button"
+              onClick={handleOtpSubmit}
+              style={{
+                width: '100%',
+                backgroundColor: '#3498db',
+                border: '1px solid #3498db',
+              }}
+              disabled={isSendOTPDisabled || !form.getFieldValue('email')}
+            >
+              Get OTP
+            </Button>
+             ) : (
               <Button
                 type="primary"
                 htmlType="submit"
@@ -182,7 +252,7 @@ const LandingPage = () => {
                   border: '1px solid #3498db',
                 }}
               >
-                Submit OTP
+                Login
               </Button>
             )}
           </Form.Item>

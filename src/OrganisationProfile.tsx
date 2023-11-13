@@ -1,13 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { Form, Input, Button, DatePicker, Select } from 'antd';
 //import 'antd/dist/antd.css';  // Import Ant Design styles
 import Header from './Header';
 import Footer from './Footer';
+import {getOrgInfo} from './api/users';
+import { useLoginData } from "./context/context";
 
 const { Option } = Select;
 
 const ProfilePage: React.FC = () => {
   const [form] = Form.useForm();
+  const [user, setUser] = useState(null);
+  const { userId, setUserId, userType, setUserType } = useLoginData();
+
+  const [orgName, setorgName] = useState("");
+  const [category, setCategory] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [location, setLocation] =  useState("");
+
+  const handleCategorycheck = (value: string) => {
+    setCategory(value);
+  };
+
+  async function fetchUserInfoData() {
+    try {
+      const userInfo = await getOrgInfo(userId);
+      console.log(userInfo);
+      setUser(userInfo);
+  
+      if (userInfo) {
+        setUser(userInfo);
+        console.log(userInfo);
+        const {
+          orgname, 
+          category, 
+          email,  
+          mobile, 
+         location
+        } = userInfo;
+  
+        setorgName((prev) => prev || orgname || "");
+        setCategory((prev) => prev || category || "");
+        setEmail((prev) => prev || email || "");
+        setMobile((prev) => prev || mobile || "");
+       setLocation((prev) => prev || location || "");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+    
+  }
+  
+ useEffect(() => {
+  const userIdData = sessionStorage.getItem('userId');
+  console.log(userIdData)
+  setUserId(userIdData); 
+ }, [setUserId]);
+
+ useEffect(() => {
+  if (userId) {
+    fetchUserInfoData();
+  }
+}, [userId]);
+
+
 
   const handleSubmit = (values: any) => {
     // Handle form submission and update data
@@ -32,48 +89,64 @@ const ProfilePage: React.FC = () => {
         wrapperCol={{ span: 16 }}
         style={{width:"500px", marginLeft:"300px", alignItems: 'center', justifyContent: 'center'}}
       >
-        <Form.Item label="First Name" name="fname" initialValue="John" rules={[{ required: true, message: 'Please enter your first name!' }]}>
-          <Input />
+        <Form.Item label="Organization"  rules={[{ required: true, message: 'Please enter your first name!' }]}>
+          <Input 
+           value={orgName}
+           name="orgName"
+           placeholder="Organization"
+           onChange={(e) => setorgName(e.target.value)}
+           required
+          />
         </Form.Item>
-
-        <Form.Item label="Last Name" name="lname" initialValue="Doe" rules={[{ required: true, message: 'Please enter your last name!' }]}>
-          <Input />
-        </Form.Item>
-
-        <Form.Item label="Gender" name="gender" initialValue="male" rules={[{ required: true, message: 'Please select your gender!' }]}>
-          <Select>
-            <Option value="male">Male</Option>
-            <Option value="female">Female</Option>
-            <Option value="others">Others</Option>
+        <Form.Item label="Category"   rules={[{ required: true, message: 'Please select your gender!' }]}>
+          <Select
+          className="w-full"
+          placeholder="Category"
+          value={category}
+          onChange={handleCategorycheck}
+          
+          
+          >
+            <Option value="Blood Bank">Blood Bank</Option>
+            <Option value="Hospitals">Hospitals</Option>
+            <Option value="NGO">NGO</Option>
+            <Option value="Medical Colleges">Medical Colleges</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item label="Date of Birth" name="dob" rules={[{ required: true, message: 'Please select your date of birth!' }]}>
-          <DatePicker />
+      
+        <Form.Item label="Mobile" name="mobile" rules={[{ required: true, message: 'Please enter your mobile number!' }]}>
+          <Input 
+           
+           name="mobile"
+           value={mobile}
+           placeholder="phone number"
+           pattern="[0-9]{10}"
+           onChange={(e) => setMobile(e.target.value)}
+           required
+           />
         </Form.Item>
 
-        <Form.Item label="Blood Group" name="bloodgroup" initialValue="A+" rules={[{ required: true, message: 'Please enter your blood group!' }]}>
-          <Input />
+        <Form.Item label="Email"  rules={[{ required: true, message: 'Please enter your email!', type: 'email' }]}>
+          <Input 
+          value={email}
+          name="email" 
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          />
         </Form.Item>
 
-        <Form.Item label="Mobile" name="mobile" initialValue={1234567890} rules={[{ required: true, message: 'Please enter your mobile number!' }]}>
-          <Input type="number" />
-        </Form.Item>
-
-        <Form.Item label="Email" name="email" initialValue="john.doe@example.com" rules={[{ required: true, message: 'Please enter your email!', type: 'email' }]}>
-          <Input />
-        </Form.Item>
-
-        <Form.Item label="User Type" name="user_type" initialValue="user">
-          <Input disabled />
-        </Form.Item>
-
-        <Form.Item label="Last Donation Date" name="lastdonationdate" rules={[{ required: true, message: 'Please select your last donation date!' }]}>
-          <DatePicker />
-        </Form.Item>
-
-        <Form.Item label="Location" name="location" initialValue="Some Location" rules={[{ required: true, message: 'Please enter your location!' }]}>
-          <Input />
+        <Form.Item label="Location" rules={[{ required: true, message: 'Please enter your location!' }]}>
+          <Input 
+           placeholder="location" 
+           name="location" 
+           className="w-full"
+           value={location}
+           onChange={(e) => setLocation(e.target.value)} 
+           required
+          
+          />
         </Form.Item>
 
         <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
